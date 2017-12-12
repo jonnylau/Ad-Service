@@ -19,9 +19,10 @@ app.get('/videos', (req, res) => {
 });
 
 app.get('/users', (req, res) => {
-  knex.raw('select * from users').then( (videos)=>{
-    res.status(200).send(videos);
-  });
+  knex.select().from('users').where('user_id', 1)
+    .then( (user) => {
+      res.status(200).send(user);
+    });
 });
 
 // ======================================================================

@@ -9,7 +9,7 @@ var db = require('../lib/videos.js');
 describe('Server Handles Requests', function () {
   this.timeout(8000);
 
-  describe('server', function () {
+  describe('Server - Test for response', function () {
     describe('GET ', function () {
       it('should return hello world', (done) => {
         // just assume that if it contains an <input> tag its index.html
@@ -19,10 +19,20 @@ describe('Server Handles Requests', function () {
       });
     });
   });
+  describe('Server - Test Query Return', function() {
+    describe('QUERY', function () {
+      it('should return an array', (done) => {
+        request(server)
+          .get('/users')
+          .set('Accept', 'application/json')
+          .expect( (res) => {
+            typeof(res.body) === 'array';
+          })
+          .expect(200, done);
+      });
+    });
+  });
 });
-
-
-
 
 
 
