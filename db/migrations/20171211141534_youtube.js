@@ -44,5 +44,5 @@ exports.down = function (knex, Promise) {
     .dropTable('ads')
     .dropTable('channel')
     .dropTable('videos')
-    .dropTable('users')
+    .dropTable('users');
 };

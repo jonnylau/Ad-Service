@@ -12,14 +12,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 //app.use(express.static(__dirname + '/../client/dist'));
 
+app.get('/videos', (req, res) => {
+  res.status(200).send('hello world');
+});
+
 // ======================================================================
 //                    Run Server
 // ======================================================================
+if (!module.parent) { // only listen to port if existing port is not in use
+  app.listen(PORT, () =>{
+    console.log('Listening on port', PORT);
+  });
+}
 
-app.listen(PORT, () =>{
-  console.log('Listening on port', PORT);
-});
-
-// module.exports = app.listen(PORT, function () {
-//     console.log(`listening on port ${PORT}!`);
-// });
+module.exports = app;
