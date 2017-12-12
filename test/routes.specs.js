@@ -1,12 +1,12 @@
 var expect = require('chai').expect;
 var server = require('../server.js');
 var request = require('supertest');
+var db = require('../lib/videos.js');
 
 // ======================================================================
 //                   Server Tests
 // ======================================================================
 describe('Server Handles Requests', function () {
-  //timeout extended
   this.timeout(8000);
 
   describe('server', function () {
@@ -20,12 +20,6 @@ describe('Server Handles Requests', function () {
     });
   });
 });
-
-
-
-
-
-
 
 
 

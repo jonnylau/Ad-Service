@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 3000;
+var knex = require('./db/knex');
+
 const app = express();
 
 //const db = require('./db'); //db.js file to run everytime our server starts
@@ -14,6 +16,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/videos', (req, res) => {
   res.status(200).send('hello world');
+});
+
+app.get('/users', (req, res) => {
+  knex.raw('select * from users').then( (videos)=>{
+    res.status(200).send(videos);
+  });
 });
 
 // ======================================================================
