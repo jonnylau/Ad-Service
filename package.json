@@ -28,6 +28,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-react": "^7.4.0",
     "express": "^4.16.2",
+    "faker": "^4.1.0",
     "knex": "^0.8.6",
     "nodemon": "^1.12.5",
     "npm": "^5.5.1",

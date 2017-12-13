@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 3000;
 var knex = require('./db/knex');
-
+var bookshelf = require('bookshelf')(knex);
 const app = express();
 
 //const db = require('./db'); //db.js file to run everytime our server starts
