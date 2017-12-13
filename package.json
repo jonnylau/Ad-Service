@@ -6,7 +6,10 @@
   "main": ".eslintrc.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "./node_modules/.bin/mocha ./test --exit"
+    "test": "./node_modules/.bin/mocha ./test --exit",
+    "seed": "npm run seed-users1 && npm run seed-users2",
+    "seed-users1": "node ./db/data_generator/users_01.js",
+    "seed-users2": "node ./db/data_generator/users_02.js"
   },
   "repository": {
     "type": "git",
@@ -29,7 +32,7 @@
     "eslint-plugin-react": "^7.4.0",
     "express": "^4.16.2",
     "faker": "^4.1.0",
-    "knex": "^0.8.6",
+    "knex": "^0.14.2",
     "nodemon": "^1.12.5",
     "npm": "^5.5.1",
     "pg": "^4.4.0",

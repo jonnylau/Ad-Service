@@ -1,36 +1,38 @@
 var knex = require('../knex');
 var faker = require('faker');
 
-let userData = [];
-
 let makeUsers = () => {
-  for (let i = 0; i < 100; i++) {
+  let userData = [];
+  for (let i = 0; i <= 5000000; i++) {
     let record = {};
     record.name = faker.name.findName();
     userData.push(record);
   }
+  return userData;
 };
 
-makeUsers();
-//console.log(userData);
+var data = makeUsers();
+var chunkSize = 1000;
 
-var chunkSize = 10;
-
-knex.batchInsert('users', userData, chunkSize)
+// knex('users').del()
+//   .then(
+knex.batchInsert('users', data, chunkSize)
   .then((results) => {
-    console.log('SUCCESSFUL INSERTION')
+    console.log('SUCCESSFUL INSERTION');
+    process.exit();
   })
   .catch((error) => {
     return error;
   });
-
+// );
 //====================================================================
 //            INSERT ONE TEST
 //====================================================================
-// knex('users').insert({ name: 'Jon' })
+// knex('users').insert({ name: 'Kiyeon' })
 //   .then((result)=>{
 //     return (result);
 //   });
+
 //====================================================================
 //            GETTING FIRST USER TEST
 //====================================================================
