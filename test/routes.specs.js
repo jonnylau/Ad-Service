@@ -34,6 +34,10 @@ describe('Server Handles Requests', function () {
   });
 });
 
+after(function (done) {
+  server.close(done);
+});
+
 
 
 

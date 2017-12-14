@@ -23,13 +23,13 @@ let categories = [
 
 let makeUsers = () => {
   let userData = [];
-  for (let i = 1; i <= 5000000; i++) {
+  for (let i = 5000001; i <= 10000000; i++) {
     let record = {};
     // make some fake categories
     record.category = categories[Math.floor( Math.random() * categories.length )];
     record.length = Math.floor(Math.random() * 1800000); // milliseconds
     //record.popularity = i;
-    record.view_count = Math.floor(Math.random()*1000);
+    record.view_count = Math.floor(Math.random() * 1000);
     record.likes = Math.floor(Math.random() * 100);
     record.user_id = i;
     userData.push(record);

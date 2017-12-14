@@ -19,7 +19,6 @@ exports.up = function(knex, Promise) {
     })
     .createTable('ads', (table) => {
       table.increments('ad_id').primary;
-      table.string('type');
       table.string('category');
       table.string('banner');
       table.string('link');
