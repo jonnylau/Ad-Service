@@ -7,7 +7,7 @@ exports.up = function(knex, Promise) {
     .createTable('videos',(table) => {
       table.increments('video_id').primary;
       table.string('category');
-      table.time('length');
+      table.integer('length');
       table.integer('view_count');
       table.integer('likes');
       table.integer('user_id').references('users.user_id');
