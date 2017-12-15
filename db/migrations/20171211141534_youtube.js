@@ -11,6 +11,8 @@ exports.up = function(knex, Promise) {
       table.integer('view_count');
       table.integer('likes');
       table.integer('user_id').references('users.user_id');
+      table.boolean('is_ad');
+      table.integer('ad').references('videos.video_id');
     })
     .createTable('channel', (table) => {
       table.increments('channel_id').primary;
@@ -23,7 +25,7 @@ exports.up = function(knex, Promise) {
       table.string('banner');
       table.string('link');
       table.integer('video_id').references('videos.video_id');
-      table.integer('ad_rank');
+      table.integer('tier');
     })
     .createTable('subscriber', (table) => {
       table.increments('subscriber_id').primary;

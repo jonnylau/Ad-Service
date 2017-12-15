@@ -7,9 +7,10 @@
   "scripts": {
     "start": "nodemon server.js",
     "test": "./node_modules/.bin/mocha ./test --exit",
-    "seed": "npm run seed-users1 && npm run seed-users2 && npm run seed-videos1 && npm run seed-videos2 && npm run seed-ads",
+    "seed": "npm run seed-users1 && npm run seed-users2 && npm run seed-videos-ads && npm run seed-videos1 && npm run seed-videos2 && npm run seed-ads",
     "seed-users1": "node ./db/data_generator/users_01.js",
     "seed-users2": "node ./db/data_generator/users_02.js",
+    "seed-videos-ads": "node ./db/data_generator/videos_00_ads.js",
     "seed-videos1": "node ./db/data_generator/videos_01.js",
     "seed-videos2": "node ./db/data_generator/videos_02.js",
     "seed-ads": "node ./db/data_generator/ads_01.js"

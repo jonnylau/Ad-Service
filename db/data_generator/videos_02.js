@@ -21,23 +21,24 @@ let categories = [
   'Travel & Events'
 ];
 
-let makeUsers = () => {
-  let userData = [];
+let makeVideos = () => {
+  let videoData = [];
   for (let i = 5000001; i <= 10000000; i++) {
     let record = {};
-    // make some fake categories
+
     record.category = categories[Math.floor( Math.random() * categories.length )];
     record.length = Math.floor(Math.random() * 1800000); // milliseconds
-    //record.popularity = i;
     record.view_count = Math.floor(Math.random() * 1000);
     record.likes = Math.floor(Math.random() * 100);
     record.user_id = i;
-    userData.push(record);
+    record.is_ad = false;
+    record.ad = Math.ceil(Math.random() * 1000000);
+    videoData.push(record);
   }
-  return userData;
+  return videoData;
 };
 
-var data = makeUsers();
+var data = makeVideos();
 var chunkSize = 1000;
 
 //console.log(data);
