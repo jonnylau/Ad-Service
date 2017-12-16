@@ -1,10 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 3000;
-var knex = require('./db/knex');
-var bookshelf = require('bookshelf')(knex);
+var knex = require('../db/knex.js');
+//var bookshelf = require('bookshelf')(knex);
+//var Video = require('./models/videos.js');
+
 const app = express();
-var Video = require('./models/videos.js');
 
 //const db = require('./db'); //db.js file to run everytime our server starts
 
@@ -27,11 +28,14 @@ app.get('/users', (req, res) => {
 });
 
 app.post('/updateCount', (req, res) => {
-  //console.log(req.body.videoId);
   let videoId = req.body.videoId;
   knex('videos').where('video_id', '=', videoId).increment('view_count', 1)
-    .then( (success) =>{
-      res.status(200).send('Successful update');
+    .then( (success) => {
+      // res.status(200).send('Successful update');
+      // if the video's view count > 200 and does not have a video
+      // find the count of the ads table and assign it a random one
+      // ^^ costly
+      //
     })
     .catch( (err) => {
       console.log(err);
