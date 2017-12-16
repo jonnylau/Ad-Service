@@ -7,6 +7,8 @@
   "scripts": {
     "start": "nodemon server.js",
     "test": "./node_modules/.bin/mocha ./test --exit",
+    "migrate": "knex migrate:latest",
+    "rollback": "knex migrate:rollback",
     "seed": "npm run seed-users1 && npm run seed-users2 && npm run seed-videos-ads && npm run seed-videos1 && npm run seed-videos2 && npm run seed-ads",
     "seed-users1": "node ./db/data_generator/users_01.js",
     "seed-users2": "node ./db/data_generator/users_02.js",

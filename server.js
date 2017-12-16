@@ -4,6 +4,7 @@ const PORT = process.env.PORT || 3000;
 var knex = require('./db/knex');
 var bookshelf = require('bookshelf')(knex);
 const app = express();
+var Video = require('./models/videos.js');
 
 //const db = require('./db'); //db.js file to run everytime our server starts
 
@@ -22,6 +23,18 @@ app.get('/users', (req, res) => {
   knex.select().from('users').where('user_id', 1)
     .then( (user) => {
       res.status(200).send(user);
+    });
+});
+
+app.post('/updateCount', (req, res) => {
+  //console.log(req.body.videoId);
+  let videoId = req.body.videoId;
+  knex('videos').where('video_id', '=', videoId).increment('view_count', 1)
+    .then( (success) =>{
+      res.status(200).send('Successful update');
+    })
+    .catch( (err) => {
+      console.log(err);
     });
 });
 
