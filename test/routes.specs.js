@@ -7,7 +7,7 @@ var request = require('supertest');
 //                   Server Tests
 // ======================================================================
 describe('Server Handles Requests', function () {
-  this.timeout(8000);
+  this.timeout(10000);  
 
   describe('Server - Test for response', function () {
     describe('GET ', function () {
@@ -18,6 +18,7 @@ describe('Server Handles Requests', function () {
       });
     });
   });
+
   describe('Server - Test Query Return', function () {
     describe('QUERY', function () {
       it('should return an array', (done) => {
@@ -31,6 +32,23 @@ describe('Server Handles Requests', function () {
       });
     });
   });
+
+  describe('Server - Add One to Video Count', function() {
+    describe('POST', function() {
+      it('should update a video\'s view count by ONE', (done) => {
+        request(server)
+        // get the view count of a video
+        // call on /updateCount
+        // get the count of the same video
+        // test if it has incremented by one
+          .post('/updateCount')
+          .set('Accept', 'application/json')
+          .send('videoId', '1000000')
+          .expect(200, done);            
+      });
+    });
+  });
+
 });
 
 // after(function (done) {

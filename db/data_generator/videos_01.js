@@ -42,7 +42,6 @@ let makeVideos = () => {
 var data = makeVideos();
 var chunkSize = 1000;
 
-//console.log(data);
 knex.batchInsert('videos', data, chunkSize)
   .then((results) => {
     console.log('SUCCESSFUL INSERTION');

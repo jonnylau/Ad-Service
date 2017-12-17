@@ -5,7 +5,7 @@
   "author": "",
   "main": ".eslintrc.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "nodemon server/index.js",
     "test": "./node_modules/.bin/mocha ./test --exit",
     "migrate": "knex migrate:latest",
     "rollback": "knex migrate:rollback",
