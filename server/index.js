@@ -46,7 +46,7 @@ app.patch('/service', (req, res) => {
       .then( (success) => {
         knex('videos').where({ video_id: targetVideo}).first()
           .then((video) => {
-            if (!video.ad || video.view_count > 2000) {
+            if (!video.ad && video.view_count === 65200) {
               let category = Math.random() > 0.5 ? type = 'comedy' : 'informational';
               knex.raw(`SELECT ad_id FROM ads WHERE category = '${category}' ORDER BY RANDOM() LIMIT 1`)
                 .then((ad_Id) => {
@@ -84,18 +84,6 @@ app.patch('/updateViews', (req, res) => {
   });
 
 }); 
-
-/*
-knex.raw('SELECT COUNT(*) FROM ads')
-    .then((count) => {
-      res.status(200).send(count);
-    });
-knex.select('*').from('ads').where({ category: 'comedy' }).limit(10)
-  .then((ads) => {
-    res.status(200).send(ads);
-  });
-*/
-
 
 // ======================================================================
 //                    Run Server
