@@ -25,6 +25,7 @@ let makeVideos = () => {
   let videoData = [];
   for (let i = 5000001; i <= 10000000; i++) {
     let record = {};
+    let views = Math.floor(Math.random() * 300);
 
     record.category = categories[Math.floor( Math.random() * categories.length )];
     record.length = Math.floor(Math.random() * 1800000); // milliseconds
@@ -32,7 +33,7 @@ let makeVideos = () => {
     record.likes = Math.floor(Math.random() * 100);
     record.user_id = i;
     record.is_ad = false;
-    record.ad = Math.ceil(Math.random() * 1000000);
+    record.ad = views > 200 ? Math.ceil(Math.random() * 1000000) : null;
     videoData.push(record);
   }
   return videoData;

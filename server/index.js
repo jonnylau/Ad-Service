@@ -37,7 +37,7 @@ app.get('/users', (req, res) => {
 // find the count of the ads table and assign it a random one
 // ^^ costly
 
-app.post('/updateCount', (req, res) => {
+app.post('/service', (req, res) => {
   let type;
   let targetVideo = req.body.videoId;
   
@@ -50,8 +50,12 @@ app.post('/updateCount', (req, res) => {
               let category = Math.random() > 0.5 ? type = 'comedic' : 'informational';
               knex.raw(`select count(*) from ads where category = '${category}'`)
                 .then((count) => {
-                  //update the videoID's adID
-                  res.status(200).send(count.rows[0].count);
+                  let randomAd = Math.ceil(Math.random() * count.rows[0].count);
+                  //res.status(200).send({adCount: count.rows[0].count, viewCount: video.view_count});
+                  knex('videos').where('ad', '=', targetVideo).update({ad: randomAd})
+                    .then((success) => {
+                      res.status(200).send({ adCount: count.rows[0].count, viewCount: video.view_count });
+                    });
                 });
             }
           });
@@ -62,13 +66,24 @@ app.post('/updateCount', (req, res) => {
   }); 
 }); 
 
-app.get('/testSimple', (req, res) => {
-  let category = 'comedy';
-  knex.raw(`select count(*) from ads where category = '${category}'`)
-    .then((count) => {
-      res.status(200).send(count);
+app.post('/updateViews', (req, res) => {
+  let type;
+  let targetVideo = req.body.videoId;
+
+  return new Promise((resolve, reject) => {
+    resolve(knex('videos').where('video_id', '=', targetVideo).increment('view_count', 1)
+      .then((success) => {
+        knex.select().table('videos').where('video_id', '=', targetVideo).
+          then((video) => {
+            res.status(200).send(video);
+          });
+      })
+    ).catch((err) => {
+      console.log(err);
     });
-});
+  });
+  
+}); 
 
 /*
 knex.raw('SELECT COUNT(*) FROM ads')
