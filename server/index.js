@@ -37,7 +37,7 @@ app.get('/users', (req, res) => {
 // find the count of the ads table and assign it a random one
 // ^^ costly
 
-app.post('/service', (req, res) => {
+app.patch('/service', (req, res) => {
   let type;
   let targetVideo = req.body.videoId;
   
@@ -46,17 +46,17 @@ app.post('/service', (req, res) => {
       .then( (success) => {
         knex('videos').where({ video_id: targetVideo}).first()
           .then((video) => {
-            if (!video.ad && video.view_count < 200) {
-              let category = Math.random() > 0.5 ? type = 'comedic' : 'informational';
-              knex.raw(`select count(*) from ads where category = '${category}'`)
-                .then((count) => {
-                  let randomAd = Math.ceil(Math.random() * count.rows[0].count);
-                  //res.status(200).send({adCount: count.rows[0].count, viewCount: video.view_count});
-                  knex('videos').where('ad', '=', targetVideo).update({ad: randomAd})
-                    .then((success) => {
-                      res.status(200).send({ adCount: count.rows[0].count, viewCount: video.view_count });
+            if (!video.ad || video.view_count > 2000) {
+              let category = Math.random() > 0.5 ? type = 'comedy' : 'informational';
+              knex.raw(`SELECT ad_id FROM ads WHERE category = '${category}' ORDER BY RANDOM() LIMIT 1`)
+                .then((ad_Id) => {
+                  knex('videos').where('video_id', '=', targetVideo).update({ 'ad': ad_Id.rows[0].ad_id })
+                    .then((testVideo) => {
+                      res.status(200).send({ 'video': video, 'ad_Id': ad_Id.rows[0].ad_id, 'messsage': 'added an Ad' });
                     });
                 });
+            } else {
+              res.status(200).send({ 'video': video, 'messsage': 'updated count only'});
             }
           });
       })
@@ -66,7 +66,7 @@ app.post('/service', (req, res) => {
   }); 
 }); 
 
-app.post('/updateViews', (req, res) => {
+app.patch('/updateViews', (req, res) => {
   let type;
   let targetVideo = req.body.videoId;
 
@@ -82,7 +82,7 @@ app.post('/updateViews', (req, res) => {
       console.log(err);
     });
   });
-  
+
 }); 
 
 /*

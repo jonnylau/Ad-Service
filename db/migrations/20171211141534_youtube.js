@@ -4,7 +4,7 @@ exports.up = function(knex, Promise) {
     table.increments('user_id').primary;
     table.string('name');
   })
-    .createTable('videos',(table) => {
+    .createTable('videos', (table) => {
       table.increments('video_id').primary;
       table.string('category');
       table.integer('length');
@@ -13,6 +13,7 @@ exports.up = function(knex, Promise) {
       table.integer('user_id').references('users.user_id');
       table.boolean('is_ad');
       table.integer('ad');
+      table.index('video_id', 'video_id_index');
     })
     .createTable('channel', (table) => {
       table.increments('channel_id').primary;
