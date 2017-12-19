@@ -7,8 +7,6 @@ var knex = require('../db/knex.js');
 
 const app = express();
 
-//const db = require('./db'); //db.js file to run everytime our server starts
-
 const request = require('request');
 const Promise = require('bluebird');
 
@@ -30,12 +28,6 @@ app.get('/users', (req, res) => {
 });
 
 //==================================================================
-
-// let count = knex()
-// res.status(200).send('Successful update');
-// if the video's view count > 200 and does not have a video
-// find the count of the ads table and assign it a random one
-// ^^ costly
 
 app.patch('/service', (req, res) => {
   let type;
