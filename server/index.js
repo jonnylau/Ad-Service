@@ -21,33 +21,12 @@ if (cluster.isMaster) {
   const bodyParser = require('body-parser');
   const PORT = process.env.PORT || 3000;
   var knex = require('../db/knex.js');
-//===================== REDIS ============================
+
   var redis = require('redis');
-  var redisClient = require('../db/redis.js');
-  var redisClient = require('redis').createClient({host: 'localhost',
-    port: '6379'});
 
-  redisClient.on('ready', function () {
-    console.log("Redis is ready");
-  });
-
-  redisClient.on('error', function () {
-    console.log("Error in Redis");
-  });
-
-  redisClient.set("language", "nodejs", function (err, reply) {
-    console.log(err);
-    console.log(reply);
-  });
-  
   const queue = require('kue').createQueue();
   queue.watchStuckJobs(6000);
   
-  queue.process('ad', (job, done) => {
-    console.log(job.data);
-    done();
-  });
-
 //=================================================
   const request = require('request');
   const Promise = require('bluebird');
@@ -57,14 +36,23 @@ if (cluster.isMaster) {
   app.use(bodyParser.urlencoded({ extended: false }));
 
   app.patch('/service', (req, res) => {
+    
     let targetVideo = req.body.videoId;
-    
-    var job = queue.create('ad', {
+  
+    queue.create('ad', {
       video_id: targetVideo
-    }).save( (err) => {
-      if(!err) console.log( job.id );
-    });
-    
+    }).save((err) => {
+      if (!err) {
+        res.status(200).send(targetVideo);
+      } else {
+        throw err;
+      }
+    });            
+  });
+
+  queue.process('ad', (job, done) => {
+    var targetVideo = job.data.video_id;
+
     return new Promise((resolve, reject) => {
       resolve(knex('videos').where('video_id', '=', targetVideo).increment('view_count', 1)
         .then((success) => {
@@ -76,11 +64,13 @@ if (cluster.isMaster) {
                   .then((ad) => {
                     knex('videos').where('video_id', '=', targetVideo).update({ 'ad': ad.rows[0].ad_id })
                       .then((testVideo) => {
-                        res.status(204).end();
+                        done();
+                        // res.status(200).send(video);
                       });
                   });
               } else {
-                res.status(204).end();
+                done();
+                //res.status(200).send(video);
               }
             });
         })
@@ -88,8 +78,39 @@ if (cluster.isMaster) {
         throw err;
       });
     });
+  });
 
-  }); 
+  // var job = queue.create('ad', {
+  //   video_id: targetVideo
+  // }).save( (err) => {
+  //   if(!err) console.log( job.id );
+  // });
+
+  // return new Promise((resolve, reject) => {
+  //   resolve(knex('videos').where('video_id', '=', targetVideo).increment('view_count', 1)
+  //     .then((success) => {
+  //       knex('videos').where({ video_id: targetVideo })
+  //         .then((video) => {
+  //           if (!video[0].ad && video[0].view_count === 339510) {
+  //             let category = Math.random() > 0.5 ? type = 'comedy' : 'informational';
+  //             knex.raw(`SELECT ad_id FROM ads WHERE category = '${category}' ORDER BY RANDOM() LIMIT 1`)
+  //               .then((ad) => {
+  //                 knex('videos').where('video_id', '=', targetVideo).update({ 'ad': ad.rows[0].ad_id })
+  //                   .then((testVideo) => {
+  //                     res.status(204).end();
+  //                   });
+  //               });
+  //           } else {
+  //             res.status(204).end();
+  //           }
+  //         });
+  //     })
+  //   ).catch((err) => {
+  //     throw err;
+  //   });
+  // });
+
+  // }); 
 
   app.post('/count', (req, res) => {
     let targetVideo = req.body.videoId;
