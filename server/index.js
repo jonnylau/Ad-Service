@@ -19,7 +19,7 @@ if (cluster.isMaster) {
 
   const express = require('express');
   const bodyParser = require('body-parser');
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || 3000;  
   var knex = require('../db/knex.js');
 
   var redis = require('redis');
@@ -45,7 +45,7 @@ if (cluster.isMaster) {
       if (!err) {
         res.status(204).end();
       } else {
-        throw err;
+        res.end();
       }
     });            
   });
@@ -80,38 +80,6 @@ if (cluster.isMaster) {
     });
   });
 
-  // var job = queue.create('ad', {
-  //   video_id: targetVideo
-  // }).save( (err) => {
-  //   if(!err) console.log( job.id );
-  // });
-
-  // return new Promise((resolve, reject) => {
-  //   resolve(knex('videos').where('video_id', '=', targetVideo).increment('view_count', 1)
-  //     .then((success) => {
-  //       knex('videos').where({ video_id: targetVideo })
-  //         .then((video) => {
-  //           if (!video[0].ad && video[0].view_count === 339510) {
-  //             let category = Math.random() > 0.5 ? type = 'comedy' : 'informational';
-  //             knex.raw(`SELECT ad_id FROM ads WHERE category = '${category}' ORDER BY RANDOM() LIMIT 1`)
-  //               .then((ad) => {
-  //                 knex('videos').where('video_id', '=', targetVideo).update({ 'ad': ad.rows[0].ad_id })
-  //                   .then((testVideo) => {
-  //                     res.status(204).end();
-  //                   });
-  //               });
-  //           } else {
-  //             res.status(204).end();
-  //           }
-  //         });
-  //     })
-  //   ).catch((err) => {
-  //     throw err;
-  //   });
-  // });
-
-  // }); 
-
   app.post('/count', (req, res) => {
     let targetVideo = req.body.videoId;
 
@@ -126,8 +94,8 @@ if (cluster.isMaster) {
     });
   });
 
-  app.get('/kue', (req, res) => {
-    res.status(200).end();
+  app.patch('/', (req, res) => {
+    res.status(204).end();
   });
 
   if (!module.parent) { // only listen to port if existing port is not in use
