@@ -8,19 +8,36 @@ if (cluster.isMaster) {
   }
 
 } else {
+// =============== ELASTIC SEARCH + KIBANA =======================================================
 //   var apm = require('elastic-apm-node').start({
 //     appName: 'youtube',
 //     // Use if APM Server requires a token
 //     // Set custom APM Server URL (default: http://localhost:8200)
 //     serverUrl: 'http://localhost:8200'
 //   });
+// ============================================================================================================
+
   const express = require('express');
   const bodyParser = require('body-parser');
   const PORT = process.env.PORT || 3000;
   var knex = require('../db/knex.js');
-  //var bookshelf = require('bookshelf')(knex);
-  //var Video = require('./models/videos.js');
+//===================== REDIS ============================
+  var redis = require('redis');
+  var redisClient = require('../db/redis.js');
 
+  redisClient.on('ready', function () {
+    console.log("Redis is ready");
+  });
+
+  redisClient.on('error', function () {
+    console.log("Error in Redis");
+  });
+
+  redisClient.set("language", "nodejs", function (err, reply) {
+    console.log(err);
+    console.log(reply);
+  });
+//=================================================
   const request = require('request');
   const Promise = require('bluebird');
   var app = express();
@@ -36,25 +53,22 @@ if (cluster.isMaster) {
         .then((success) => {
           knex('videos').where({ video_id: targetVideo })
             .then((video) => {
-              console.log('has an ad', !video[0].ad);
               if (!video[0].ad && video[0].view_count === 339510) {
-                console.log('made it to the if');
                 let category = Math.random() > 0.5 ? type = 'comedy' : 'informational';
                 knex.raw(`SELECT ad_id FROM ads WHERE category = '${category}' ORDER BY RANDOM() LIMIT 1`)
                   .then((ad) => {
                     knex('videos').where('video_id', '=', targetVideo).update({ 'ad': ad.rows[0].ad_id })
                       .then((testVideo) => {
-                        res.status(200).send(video);
+                        res.status(204).end();
                       });
                   });
               } else {
-                console.log('did not add an ad');
-                res.status(200).send(video);
+                res.status(204).end();
               }
             });
         })
       ).catch((err) => {
-        console.log(err);
+        throw err;
       });
     });
   }); 
