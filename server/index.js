@@ -27,7 +27,7 @@ if (cluster.isMaster) {
   const queue = require('kue').createQueue();
   queue.watchStuckJobs(6000);
   
-//=================================================
+// =================================================
   const request = require('request');
   const Promise = require('bluebird');
   var app = express();
@@ -41,9 +41,9 @@ if (cluster.isMaster) {
   
     queue.create('ad', {
       video_id: targetVideo
-    }).save((err) => {
+    }).save( (err) => {
       if (!err) {
-        res.status(200).send(targetVideo);
+        res.status(204).end();
       } else {
         throw err;
       }
