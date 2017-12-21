@@ -24,6 +24,8 @@ if (cluster.isMaster) {
 //===================== REDIS ============================
   var redis = require('redis');
   var redisClient = require('../db/redis.js');
+  var redisClient = require('redis').createClient({host: 'localhost',
+    port: '6379'});
 
   redisClient.on('ready', function () {
     console.log("Redis is ready");
@@ -37,6 +39,15 @@ if (cluster.isMaster) {
     console.log(err);
     console.log(reply);
   });
+  
+  const queue = require('kue').createQueue();
+  queue.watchStuckJobs(6000);
+  
+  queue.process('ad', (job, done) => {
+    console.log(job.data);
+    done();
+  });
+
 //=================================================
   const request = require('request');
   const Promise = require('bluebird');
@@ -47,7 +58,13 @@ if (cluster.isMaster) {
 
   app.patch('/service', (req, res) => {
     let targetVideo = req.body.videoId;
-
+    
+    var job = queue.create('ad', {
+      video_id: targetVideo
+    }).save( (err) => {
+      if(!err) console.log( job.id );
+    });
+    
     return new Promise((resolve, reject) => {
       resolve(knex('videos').where('video_id', '=', targetVideo).increment('view_count', 1)
         .then((success) => {
@@ -71,6 +88,7 @@ if (cluster.isMaster) {
         throw err;
       });
     });
+
   }); 
 
   app.post('/count', (req, res) => {
