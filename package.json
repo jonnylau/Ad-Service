@@ -48,7 +48,8 @@
     "pg": "^4.4.0",
     "redis": "^2.8.0",
     "request": "^2.83.0",
-    "supertest": "^3.0.0"
+    "supertest": "^3.0.0",
+    "winston": "^2.4.0"
   },
   "homepage": "https://github.com/jonnylau/hrsf83-thesis#readme"
 }

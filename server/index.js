@@ -1,3 +1,4 @@
+// ====================== CLUSTER =======================================================
 const cluster = require('cluster');
 
 if (cluster.isMaster) {
@@ -15,8 +16,24 @@ if (cluster.isMaster) {
 //     // Set custom APM Server URL (default: http://localhost:8200)
 //     serverUrl: 'http://localhost:8200'
 //   });
-// ============================================================================================================
-
+// ===============================================================================================
+  const Winston = require('winston');
+  const logger = new Winston.Logger({
+    level: 'verbose',
+    transports: [
+      new Winston.transports.Console({
+        timestamp: true
+      }),
+      new Winston.transports.File({
+        filename: 'error.log',
+        timestamp: true,
+        level: 'error',
+      })
+    ]
+  });
+  
+  logger.error('Holla');
+  
   const express = require('express');
   const bodyParser = require('body-parser');
   const PORT = process.env.PORT || 3000;  
@@ -27,7 +44,8 @@ if (cluster.isMaster) {
   const queue = require('kue').createQueue();
   queue.watchStuckJobs(6000);
   
-// =================================================
+  // =============================================================================================
+  
   const request = require('request');
   const Promise = require('bluebird');
   var app = express();
@@ -41,16 +59,20 @@ if (cluster.isMaster) {
   
     queue.create('ad', {
       video_id: targetVideo
-    }).save( (err) => {
-      if (!err) {
-        res.status(204).end();
-      } else {
-        res.end();
-      }
-    });            
+    })
+      .priority('low')
+      .removeOnComplete( true )
+      .save( (err) => {
+        if (!err) {
+          res.status(204).end();
+        } else {
+          logger.error(err);
+          res.end();
+        }
+      });            
   });
 
-  queue.process('ad', (job, done) => {
+  queue.process('ad', 100, (job, done) => {
     var targetVideo = job.data.video_id;
 
     return new Promise((resolve, reject) => {
