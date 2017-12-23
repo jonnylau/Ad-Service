@@ -72,7 +72,7 @@ if (cluster.isMaster) {
       });            
   });
 
-  queue.process('ad', 100, (job, done) => {
+  queue.process('ad', (job, done) => {
     var targetVideo = job.data.video_id;
 
     return new Promise((resolve, reject) => {
