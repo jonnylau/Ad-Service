@@ -32,35 +32,34 @@ if (cluster.isMaster) {
     ]
   });
   
-  logger.error('Holla');
-  
-  const express = require('express');
-  const bodyParser = require('body-parser');
   const PORT = process.env.PORT || 3000;  
-  var knex = require('../db/knex.js');
+  const knex = require('../db/knex.js');
 
-  var redis = require('redis');
-
+  const redis = require('redis');
   const queue = require('kue').createQueue();
   queue.watchStuckJobs(6000);
   
   // =============================================================================================
   
+  const express = require('express');
+  const bodyParser = require('body-parser');
   const request = require('request');
   const Promise = require('bluebird');
-  var app = express();
+  const app = express();
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
 
+  const updateViewCount = require('../lib/videos.js').updateViewCount;
+  const createQueueItem = require('../lib/videos.js').createQueueItem;
+
   app.patch('/service', (req, res) => {
     
     let targetVideo = req.body.videoId;
-  
     queue.create('ad', {
       video_id: targetVideo
     })
-      .priority('low')
+      .priority('medium')
       .removeOnComplete( true )
       .save( (err) => {
         if (!err) {
@@ -74,13 +73,13 @@ if (cluster.isMaster) {
 
   queue.process('ad', (job, done) => {
     var targetVideo = job.data.video_id;
-
+    
     return new Promise((resolve, reject) => {
       resolve(knex('videos').where('video_id', '=', targetVideo).increment('view_count', 1)
         .then((success) => {
           knex('videos').where({ video_id: targetVideo })
             .then((video) => {
-              if (!video[0].ad && video[0].view_count === 339510) {
+              if (!video[0].ad && video[0].view_count === 200) {
                 let category = Math.random() > 0.5 ? type = 'comedy' : 'informational';
                 knex.raw(`SELECT ad_id FROM ads WHERE category = '${category}' ORDER BY RANDOM() LIMIT 1`)
                   .then((ad) => {
@@ -102,20 +101,10 @@ if (cluster.isMaster) {
     });
   });
 
-  app.post('/count', (req, res) => {
-    let targetVideo = req.body.videoId;
-
-    return new Promise((resolve, reject) => {
-      resolve(knex('videos').where({ video_id: targetVideo })
-        .then((video) => {
-          res.status(200).send(video);
-        })
-      ).catch((err) => {
-        console.log(err);
-      });
-    });
-  });
-
+  // ==================================================================
+  //  Load testing dummy function 
+  // ==================================================================
+  
   app.patch('/', (req, res) => {
     res.status(204).end();
   });
