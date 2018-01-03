@@ -1,4 +1,5 @@
 // ====================== CLUSTER =======================================================
+require('newrelic');
 const cluster = require('cluster');
 
 if (cluster.isMaster) {
@@ -40,7 +41,6 @@ if (cluster.isMaster) {
   queue.watchStuckJobs(6000);
   
   // =============================================================================================
-  
   const express = require('express');
   const bodyParser = require('body-parser');
   const request = require('request');
@@ -102,7 +102,7 @@ if (cluster.isMaster) {
   });
 
   // ==================================================================
-  //  Load testing dummy function 
+  //  Load Testing Endpoint 
   // ==================================================================
   
   app.patch('/', (req, res) => {

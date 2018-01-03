@@ -12,12 +12,13 @@ AWS.config.loadFromPath('./config.json');
 var sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
 
 for (let i = 0; i < 10; i++) {
+  let videoId = Math.ceil( Math.random() * 10000000).toString();
   var params = {
     DelaySeconds: 10,
     MessageAttributes: {
       "videoId": {
         DataType: "Number",
-        StringValue: "1000002"
+        StringValue: "videoId"
       }
     },
     MessageBody: "None",
