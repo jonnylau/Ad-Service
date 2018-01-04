@@ -1,4 +1,6 @@
 // ====================== CLUSTER =======================================================
+const queue = {};
+
 require('newrelic');
 const cluster = require('cluster');
 
@@ -88,12 +90,12 @@ if (cluster.isMaster) {
                     knex('videos').where('video_id', '=', targetVideo).update({ 'ad': ad.rows[0].ad_id })
                       .then((testVideo) => {
                         //done();
-                        // res.status(200).send(video);
+                        res.status(204).end();
                       });
                   });
               } else {
                 //done();
-                //res.status(200).send(video);
+                res.status(204).end();
               }
             });
         })
@@ -109,6 +111,42 @@ if (cluster.isMaster) {
   
   app.patch('/', (req, res) => {
     res.status(200).send({testMessage: 'hello world'});
+  });
+
+  
+
+  app.patch('/test', (req, res) => {
+    let targetVideo = req.body.videoId;
+    console.log(typeof targetVideo);
+    
+    if (Object.keys(queue).length < 5) {
+
+      queue[targetVideo] = (queue[targetVideo] || 0) + 1;
+      //queue[targetVideo] += 1;
+
+      console.log('keyCount --->', Object.keys(queue).length);
+      console.log('queue ---->', queue);
+      
+      res.status(200).send({message: 'updates recieved'});
+    } else {
+      let videos = [];
+      let views = [];
+      
+      for (video of Object.keys(queue)) {
+        videos.push(video);
+      }
+      for (video in queue) {
+        views.push(queue[video]);
+      }
+      console.log(videos, views);
+      res.status(200).send({ message: 'over threshold' });
+      //knex.raw()
+      // update tmp set age = data_table.age
+      // from
+      //   (select unnest(array['keith', 'leslie', 'bexley', 'casey']) as name,
+      //   unnest(array[44, 50, 10, 12]) as age) as data_table
+      // where tmp.name = data_table.name; 
+    }
   });
 
   if (!module.parent) { // only listen to port if existing port is not in use
