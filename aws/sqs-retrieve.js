@@ -67,4 +67,4 @@ const recieveMessage = function() {
   });
 };
 
-setInterval(recieveMessage, 1000);
+setInterval(recieveMessage, 5000);

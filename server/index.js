@@ -34,11 +34,14 @@ if (cluster.isMaster) {
   });
   
   const PORT = process.env.PORT || 3000;  
-  const knex = require('../db/knex.js');
-
-  const redis = require('redis');
-  const queue = require('kue').createQueue();
-  queue.watchStuckJobs(6000);
+  //const knex = require('../db/knex.js');
+  const knex = require('knex')({
+    client: 'pg',
+    connection: 'postgres://postgres@172.17.0.3',
+  });
+  // const redis = require('redis');
+  // const queue = require('kue').createQueue();
+  // queue.watchStuckJobs(6000);
   
   // =============================================================================================
   const express = require('express');
@@ -50,30 +53,29 @@ if (cluster.isMaster) {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
 
-  const updateViewCount = require('../lib/videos.js').updateViewCount;
-  const createQueueItem = require('../lib/videos.js').createQueueItem;
-
   app.patch('/service', (req, res) => {
     
     let targetVideo = req.body.videoId;
-    queue.create('ad', {
-      video_id: targetVideo
-    })
-      .priority('medium')
-      .removeOnComplete( true )
-      .save( (err) => {
-        if (!err) {
-          res.status(204).end();
-        } else {
-          logger.error(err);
-          res.end();
-        }
-      });            
-  });
-
-  queue.process('ad', (job, done) => {
-    var targetVideo = job.data.video_id;
+    // ======================================================================
+    //                                                      REDIS KUE
+    //   queue.create('ad', {
+    //     video_id: targetVideo
+    //   })
+    //     .priority('medium')
+    //     .removeOnComplete( true )
+    //     .save( (err) => {
+    //       if (!err) {
+    //         res.status(204).end();
+    //       } else {
+    //         logger.error(err);
+    //         res.end();
+    //       }
+    //     });            
+    // });
     
+    // queue.process('ad', (job, done) => {
+    // var targetVideo = job.data.video_id;
+    // ======================================================================
     return new Promise((resolve, reject) => {
       resolve(knex('videos').where('video_id', '=', targetVideo).increment('view_count', 1)
         .then((success) => {
@@ -85,12 +87,12 @@ if (cluster.isMaster) {
                   .then((ad) => {
                     knex('videos').where('video_id', '=', targetVideo).update({ 'ad': ad.rows[0].ad_id })
                       .then((testVideo) => {
-                        done();
+                        //done();
                         // res.status(200).send(video);
                       });
                   });
               } else {
-                done();
+                //done();
                 //res.status(200).send(video);
               }
             });
@@ -106,7 +108,7 @@ if (cluster.isMaster) {
   // ==================================================================
   
   app.patch('/', (req, res) => {
-    res.status(204).end();
+    res.status(200).send({testMessage: 'hello world'});
   });
 
   if (!module.parent) { // only listen to port if existing port is not in use
